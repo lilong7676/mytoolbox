@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, this.title = 'my toolbox'});
+  const HomePage({required this.navigationShell, super.key});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -13,9 +13,8 @@ class HomePage extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
 
-  final String title;
-
-  final bool isLogin = false;
+  /// The navigation shell and container for the branch Navigators.
+  final StatefulNavigationShell navigationShell;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -45,6 +44,7 @@ class _HomePageState extends State<HomePage> {
             onDestinationSelected: (int index) {
               setState(() {
                 _selectedIndex = index;
+                widget.navigationShell.goBranch(index);
               });
             },
             labelType: labelType,
@@ -84,9 +84,9 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           const VerticalDivider(thickness: 1, width: 1),
-          // This is the main content.
-          const Expanded(
-            child: Column(children: []),
+          // 主要内容展示区域
+          Expanded(
+            child: widget.navigationShell,
           )
         ],
       ), // This trailing comma makes auto-formatting nicer for build methods.

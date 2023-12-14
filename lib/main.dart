@@ -21,10 +21,12 @@ class MyApp extends StatelessWidget {
             (BuildContext context, AsyncSnapshot<SharedPreferences> prefs) {
           AppModel appModel = AppModel();
 
+          // 判断是否登录
           var isLogin = false;
           if (prefs.hasData) {
             var data = prefs.data;
             isLogin = data?.getBool('isLogin') ?? false;
+            // 修改登录状态
             isLogin ? appModel.login() : appModel.logout();
           }
 

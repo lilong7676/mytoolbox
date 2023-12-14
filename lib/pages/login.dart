@@ -3,7 +3,7 @@
  * @Author: lilonglong
  * @Date: 2023-12-13 23:31:09
  * @Last Modified by: lilonglong
- * @Last Modified time: 2023-12-14 10:36:45
+ * @Last Modified time: 2023-12-14 16:19:29
  */
 
 import 'package:flutter/material.dart';
@@ -54,7 +54,7 @@ class _LoginState extends State<Login> {
                 onPressed: () {
                   AppModel appModel = context.read<AppModel>();
                   appModel.login();
-                  context.pushReplacement('/');
+                  context.pushReplacement('/home');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.yellow,
