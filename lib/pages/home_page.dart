@@ -76,11 +76,6 @@ class _HomePageState extends State<HomePage> {
                 selectedIcon: Icon(Icons.book),
                 label: Text('粘贴板工具'),
               ),
-              NavigationRailDestination(
-                icon: Icon(Icons.star_border),
-                selectedIcon: Icon(Icons.star),
-                label: Text('others'),
-              ),
             ],
           ),
           const VerticalDivider(thickness: 1, width: 1),

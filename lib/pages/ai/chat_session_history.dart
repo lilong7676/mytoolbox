@@ -1,9 +1,9 @@
 /*
- * 会话历史列表
+ * 会话历史列表，点击可应用到聊天页面
  * @Author: lilonglong
  * @Date: 2023-12-14 23:09:11
  * @Last Modified by: lilonglong
- * @Last Modified time: 2023-12-14 16:39:46
+ * @Last Modified time: 2023-12-15 14:16:32
  */
 
 import 'package:flutter/material.dart';
@@ -21,20 +21,18 @@ class ChatSessionHistoryState extends State<ChatSessionHistory> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.separated(
-        padding: const EdgeInsets.all(8),
-        itemCount: entries.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            title: Text(entries[index]),
-            onTap: () {
-              GoRouter.of(context).go('/ai/detail');
-            },
-          );
-        },
-        separatorBuilder: (BuildContext context, int index) => const Divider(),
-      ),
+    return ListView.separated(
+      padding: const EdgeInsets.all(8),
+      itemCount: entries.length,
+      itemBuilder: (BuildContext context, int index) {
+        return ListTile(
+          title: Text(entries[index]),
+          onTap: () {
+            GoRouter.of(context).go('/ai/detail');
+          },
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
     );
   }
 }

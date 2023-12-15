@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
             isLogin ? appModel.login() : appModel.logout();
           }
 
+          // 使用 MultiProvider 包裹整个应用, 用于状态管理
           return MultiProvider(
             providers: [ChangeNotifierProvider(create: (_) => appModel)],
             child: MaterialApp.router(

@@ -3,7 +3,7 @@
  * @Author: lilonglong
  * @Date: 2023-12-14 23:54:31
  * @Last Modified by: lilonglong
- * @Last Modified time: 2023-12-14 16:26:10
+ * @Last Modified time: 2023-12-15 14:31:39
  */
 import 'package:flutter/material.dart';
 import 'package:mytoolbox/pages/ai/chat.dart';
@@ -21,8 +21,15 @@ class AiState extends State<Ai> {
   Widget build(BuildContext context) {
     return const Row(
       children: [
-        Chat(),
-        ChatSessionHistory(),
+        Expanded(child: Chat()),
+        VerticalDivider(
+          width: 1,
+          thickness: 1,
+        ),
+        SizedBox(
+          width: 250,
+          child: ChatSessionHistory(),
+        )
       ],
     );
   }
