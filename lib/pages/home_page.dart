@@ -74,7 +74,7 @@ class _HomePageState extends State<HomePage> {
               NavigationRailDestination(
                 icon: Icon(Icons.bookmark_border),
                 selectedIcon: Icon(Icons.book),
-                label: Text('粘贴板工具'),
+                label: Text('粘贴板历史'),
               ),
             ],
           ),

@@ -54,6 +54,7 @@ final GoRouter homeRouter = GoRouter(
             return HomePage(navigationShell: navigationShell);
           },
           branches: [
+            // AI 工具
             StatefulShellBranch(routes: [
               GoRoute(
                 path: '/ai',
@@ -69,6 +70,7 @@ final GoRouter homeRouter = GoRouter(
                 ],
               )
             ]),
+            // 粘贴板工具
             StatefulShellBranch(routes: [
               GoRoute(
                 path: '/paster',

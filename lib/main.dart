@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:mytoolbox/models/app.dart';
 import 'package:mytoolbox/common/theme.dart';
-import 'utils/router.dart';
+import 'router.dart';
 
 void main() {
   runApp(const MyApp());
