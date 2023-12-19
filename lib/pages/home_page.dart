@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> {
               NavigationRailDestination(
                 icon: Icon(Icons.favorite_border),
                 selectedIcon: Icon(Icons.favorite),
-                label: Text('AI'),
+                label: Text('MyGPT'),
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.bookmark_border),

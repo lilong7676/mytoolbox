@@ -3,9 +3,9 @@
  * @Author: lilonglong
  * @Date: 2023-12-14 23:20:52
  * @Last Modified by: lilonglong
- * @Last Modified time: 2023-12-19 16:26:59
+ * @Last Modified time: 2023-12-19 16:53:32
  */
-
+import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:clipboard_watcher/clipboard_watcher.dart';
@@ -25,6 +25,7 @@ class PasterState extends State<Paster> with ClipboardListener {
 
   @override
   void initState() {
+    // 监听粘贴板
     clipboardWatcher.addListener(this);
     // start watch
     clipboardWatcher.start();
@@ -45,28 +46,13 @@ class PasterState extends State<Paster> with ClipboardListener {
       return;
     }
 
-    String? text = '';
-
-    final reader = await ClipboardReader.readClipboard();
-
-    if (reader.canProvide(Formats.plainText)) {
-      text = await reader.readValue(Formats.plainText);
-      ClipboardHistoryItem item = ClipboardHistoryItem(text: text);
-      setState(() {
-        historyList.insert(0, item);
-      });
-    } else if (reader.canProvide(Formats.png)) {
-      /// Binary formats need to be read as streams
-      reader.getFile(Formats.png, (file) async {
-        // Do something with the PNG image
-        final imageBytes = await file.readAll();
-        ClipboardHistoryItem item =
-            ClipboardHistoryItem(imageBytes: imageBytes);
-        setState(() {
-          historyList.insert(0, item);
-        });
-      });
+    final item = await ClipboardHistoryItem.readFromClipboard();
+    if (item.contentType == ClipboardContentType.empty) {
+      return;
     }
+    setState(() {
+      historyList.insert(0, item);
+    });
   }
 
   @override
@@ -137,7 +123,7 @@ class PasterState extends State<Paster> with ClipboardListener {
                               tempDisableListener = true;
                               // 写入剪贴板
                               await historyItem.writeToClipboard();
-                              // TODO 待解决：首先需要使应用进入后台，然后激活之前的应用（有输入框的应用）
+                              // TODO 待解决：理想情况下，首先需要使应用进入后台，然后激活之前的应用（有输入框的应用）
                               // 然后进行粘贴操作
                               // await FlutterClipboard.paste();
                               // 延迟后再次启用监听
@@ -199,5 +185,40 @@ class ClipboardHistoryItem {
       item.add(Formats.plainText(text!));
     }
     await ClipboardWriter.instance.write([item]);
+  }
+
+  static Future<ClipboardHistoryItem> readFromClipboard() async {
+    final reader = await ClipboardReader.readClipboard();
+
+    if (reader.canProvide(Formats.plainText)) {
+      final text = await reader.readValue(Formats.plainText);
+      return ClipboardHistoryItem(text: text);
+    } else if (reader.canProvide(Formats.png)) {
+      // 暂时只支持 png file
+      final imageBytes =
+          await ClipboardHistoryItem.readFile(reader, Formats.png);
+      return ClipboardHistoryItem(imageBytes: imageBytes);
+    } else {
+      return ClipboardHistoryItem();
+    }
+  }
+
+  static Future<Uint8List?>? readFile(
+      ClipboardReader reader, FileFormat format) {
+    final c = Completer<Uint8List?>();
+    final progress = reader.getFile(format, (file) async {
+      try {
+        final all = await file.readAll();
+        c.complete(all);
+      } catch (e) {
+        c.completeError(e);
+      }
+    }, onError: (e) {
+      c.completeError(e);
+    });
+    if (progress == null) {
+      c.complete(null);
+    }
+    return c.future;
   }
 }
