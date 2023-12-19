@@ -3,14 +3,13 @@
  * @Author: lilonglong
  * @Date: 2023-12-14 23:20:52
  * @Last Modified by: lilonglong
- * @Last Modified time: 2023-12-19 10:24:53
+ * @Last Modified time: 2023-12-19 16:26:59
  */
 
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:clipboard_watcher/clipboard_watcher.dart';
-import 'package:clipboard/clipboard.dart';
-import 'package:pasteboard/pasteboard.dart';
+import 'package:super_clipboard/super_clipboard.dart';
 
 class Paster extends StatefulWidget {
   const Paster({Key? key}) : super(key: key);
@@ -45,14 +44,29 @@ class PasterState extends State<Paster> with ClipboardListener {
     if (tempDisableListener) {
       return;
     }
-    final text = await Pasteboard.text;
-    final imageBytes = await Pasteboard.image;
-    ClipboardHistoryItem item =
-        ClipboardHistoryItem(text: text, imageBytes: imageBytes);
 
-    setState(() {
-      historyList.insert(0, item);
-    });
+    String? text = '';
+
+    final reader = await ClipboardReader.readClipboard();
+
+    if (reader.canProvide(Formats.plainText)) {
+      text = await reader.readValue(Formats.plainText);
+      ClipboardHistoryItem item = ClipboardHistoryItem(text: text);
+      setState(() {
+        historyList.insert(0, item);
+      });
+    } else if (reader.canProvide(Formats.png)) {
+      /// Binary formats need to be read as streams
+      reader.getFile(Formats.png, (file) async {
+        // Do something with the PNG image
+        final imageBytes = await file.readAll();
+        ClipboardHistoryItem item =
+            ClipboardHistoryItem(imageBytes: imageBytes);
+        setState(() {
+          historyList.insert(0, item);
+        });
+      });
+    }
   }
 
   @override
@@ -122,13 +136,7 @@ class PasterState extends State<Paster> with ClipboardListener {
                               // 临时禁用监听
                               tempDisableListener = true;
                               // 写入剪贴板
-                              if (historyItem.contentType ==
-                                  ClipboardContentType.text) {
-                                Pasteboard.writeText(historyItem.text!);
-                              } else if (historyItem.contentType ==
-                                  ClipboardContentType.image) {
-                                Pasteboard.writeImage(historyItem.imageBytes!);
-                              }
+                              await historyItem.writeToClipboard();
                               // TODO 待解决：首先需要使应用进入后台，然后激活之前的应用（有输入框的应用）
                               // 然后进行粘贴操作
                               // await FlutterClipboard.paste();
@@ -149,6 +157,7 @@ class PasterState extends State<Paster> with ClipboardListener {
                                 duration: Duration(seconds: 2),
                                 showCloseIcon: true,
                               );
+                              if (!context.mounted) return;
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(snackBar);
                             }))
@@ -179,5 +188,16 @@ class ClipboardHistoryItem {
       contentType = ClipboardContentType.empty;
     }
     timestamp = DateTime.now();
+  }
+
+  Future<void> writeToClipboard() async {
+    final item = DataWriterItem();
+    if (imageBytes != null) {
+      item.add(Formats.png(imageBytes!));
+    }
+    if (text != null) {
+      item.add(Formats.plainText(text!));
+    }
+    await ClipboardWriter.instance.write([item]);
   }
 }
