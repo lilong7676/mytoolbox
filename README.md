@@ -1,6 +1,9 @@
 # mytoolbox
 
-A new Flutter project.
+- [x] Pasteboard history manager
+- [ ] PrivateGPT
+  - [ ] Chat
+  - [ ] Chat history manager
 
 ## Getting Started
 
